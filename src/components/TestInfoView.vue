@@ -4,9 +4,9 @@
     <p>Name: {{ testName }}</p>
     <ul v-if="fileList.length">
       <li v-for="(item, index) in fileList" :key="index">
-        <a v-bind:href="item.url" v-bind:download="item.name">
+        <button @click="download(item.url, item.name)">
           {{ item.name }}
-        </a>
+        </button>
       </li>
     </ul>
   </div>
@@ -16,10 +16,30 @@
   import { ref, onMounted } from 'vue'
   import { useRoute } from 'vue-router'
   import { getTestInfo } from './BackendRequest';
+  import axios from 'axios';
 
   const route = useRoute()
   const testName = ref('')
   const fileList = ref([])
+
+  async function download(url, name) {
+    try {
+      const response = await axios({
+        url: url,
+        method: 'GET',
+        responseType: 'blob', // important
+      });
+      const fileURL = window.URL.createObjectURL(new Blob([response.data]));
+      const fileLink = document.createElement('a');
+      fileLink.href = fileURL;
+      fileLink.setAttribute('download', name); // file name
+      document.body.appendChild(fileLink);
+      fileLink.click();
+      document.body.removeChild(fileLink);
+    } catch (error) {
+      console.error('An error occurred while downloading the file:', error);
+    }
+  }
 
   onMounted(async () => {
     if (route.params && route.params.id) {
