@@ -6,6 +6,7 @@ module.exports = defineConfig({
       key: fs.readFileSync('keys/key.pem'),
       cert: fs.readFileSync('keys/cert.pem'),
     },
+    allowedHosts: "all",
   },
   transpileDependencies: true
 })
