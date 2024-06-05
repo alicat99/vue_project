@@ -9,18 +9,3 @@ module.exports = defineConfig({
   },
   transpileDependencies: true
 })
-module.exports = {
-  devServer: {
-    allowedHosts: "all",
-    disableHostCheck: true
-  },
-};
-const fs = require('fs')
-module.exports = {
-  devServer: {
-    https: {
-      key: fs.readFileSync('/etc/letsencrypt/live/soongsil.us/privkey.pem'),
-      cert: fs.readFileSync('/etc/letsencrypt/live/soongsil.us/fullchain.pem'),
-    },
-  },
-}
