@@ -9,9 +9,7 @@ async function fetchTestData() {
     const data = response.data;
     
     // 로컬 스토리지에 데이터 저장
-    localStorage.setItem('fetchedData', JSON.stringify(data));
-    
-    console.log('Data fetched and stored in local storage:', data);
+    sessionStorage.setItem('fetchedData', JSON.stringify(data));
 
     return data;
   } catch (error) {
@@ -20,7 +18,7 @@ async function fetchTestData() {
 }
 
 async function getTestData() {
-  const storedData = localStorage.getItem('fetchedData');
+  const storedData = sessionStorage.getItem('fetchedData');
   if (storedData) {
     return JSON.parse(storedData);
   }
@@ -36,9 +34,23 @@ function filterKeys(data, searchTerm) {
   for (const key in data) {
       const includesAllTerms = searchTerms.every(term => key.includes(term));
       if (includesAllTerms) {
+          const dd = data[key];
+          let problem = false;
+          let answer = false;
+          for (const key2 in dd) {
+            if (key2.includes("문제")) {
+              problem = true;
+            }
+            else if (key2.includes("정답")) {
+              answer = true;
+            }
+          }
+
           result.push({
             "name": key,
-            "data": data[key]
+            "data": data[key],
+            "problem": problem,
+            "answer": answer
           })
       }
   }
@@ -49,7 +61,6 @@ async function findTest(query) {
   const data = await getTestData();
   
   const queriedData = filterKeys(data, query);
-  console.log(queriedData)
 
   return queriedData
 }
@@ -79,4 +90,4 @@ async function getTestInfo(name) {
   }
 }
 
-export { findTest, getTestInfo }
+export { getTestData, findTest, getTestInfo }

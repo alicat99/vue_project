@@ -1,13 +1,12 @@
 <template>
   <div class="container">
-    <h1>Test Information</h1>
-    <p>Name: {{ testName }}</p>
+    <div class="title">{{ testName }}</div>
     <ul v-if="fileList.length">
-      <li v-for="(item, index) in fileList" :key="index">
-        <button @click="download(item.url, item.name)">
+      <div v-for="(item, index) in fileList" :key="index">
+        <button class="file" @click="download(item.url, item.name)">
           {{ item.name }}
         </button>
-      </li>
+      </div>
     </ul>
   </div>
 </template>
@@ -54,4 +53,22 @@
 </script>
 
 <style>
+.title {
+  font-family: 'Black Han Sans';
+  font-size: 30px;
+  color: var(--p3);
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.file {
+  border: none;
+  border-radius: 15px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: 10px;
+  height: 30px;
+  background-color: white;
+  color: var(--p3);
+  box-shadow: 0px 3px 7px var(--b4);
+}
 </style>
