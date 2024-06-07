@@ -52,7 +52,7 @@
   })
 </script>
 
-<style>
+<style scoped>
 .title {
   font-family: 'Black Han Sans';
   font-size: 30px;

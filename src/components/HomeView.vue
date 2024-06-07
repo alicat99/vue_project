@@ -42,7 +42,7 @@
 
   async function submit() {
     if (inputValue.value.length == 0) return;
-    router.replace({name: "Home", query: {"query": inputValue.value}})
+    router.push({name: "Home", query: {"query": inputValue.value}})
     const query = inputValue.value
     inputValue.value = query;
     const result = await findTest(query);
@@ -62,7 +62,7 @@
   })
 </script>
 
-<style>
+<style scoped>
 .container {
   padding-top: 10px;
   color: #a08797;
