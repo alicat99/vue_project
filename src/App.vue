@@ -34,7 +34,12 @@ body {
   width: 100%;
 }
 
-@import url('https://fonts.googleapis.com/css?family=Black+Han+Sans:400');
+@font-face {
+    font-family: 'Black Han Sans';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2102-01@1.0/RixYeoljeongdo_Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 
 @font-face {
     font-family: 'Pretendard-Regular';

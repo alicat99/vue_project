@@ -1,6 +1,6 @@
 <template>
   <div class="viewport">
-    <div class="container" v-if="type != 'verification'">
+    <div class="container" v-if="type == 'login' || type == 'register'">
       <div class="title">
         <div v-if="type == 'login'">로그인</div>
         <div v-if="type == 'register'">회원가입</div>
@@ -21,6 +21,13 @@
         <div v-if="type == 'register'">이미 가입했나요?</div>
       </button>
     </div>
+
+    <div class="container" v-if="type == 'verification'">
+      {{ email }} 계정의 이메일 인증을 완료해주세요!
+      <button class="submit" @click="emailVerification">
+        인증 메일 전송하기
+      </button>
+    </div>
   </div>
   
 </template>
@@ -37,6 +44,8 @@
   
   const route = useRoute();
   const router = useRouter();
+
+  let isSignout = false;
 
   const pattern = /^[a-zA-Z0-9._%+-]+@soongsil\.net$/;
   function emailValidChk(email) {
@@ -63,20 +72,24 @@
         const user = await signIn(email.value, password.value);
 
         if (!user.emailVerified) {
+          alert("성공적으로 로그인되었습니다. 이메일 인증을 완료해주세요.")
           router.push({name: "Auth", params: {type: "verification"}});
+        }
+        else {
+          alert("성공적으로 로그인되었습니다")
+          router.push({name: "Home"});
         }
       }
       catch(error) {
-        alert("이메일이 등록되지 않았거나 비밀번호가 올바르지 않습니다")
+        alert("로그인에 실패하였습니다. 이메일과 비밀번호를 확인해주세요.")
       }
     }
     else if (type.value == 'register') {
       try {
-        const user = await signUp(email.value, password.value);
+        await signUp(email.value, password.value);
 
-        if (!user.emailVerified) {
-          router.push({name: "Auth", params: {type: "verification"}});
-        }
+        alert("성공적으로 회원가입되었습니다. 이메일 인증을 완료해주세요.")
+        router.push({name: "Auth", params: {type: "verification"}});
       }
       catch(error) {
         var errorCode = error.code;
@@ -110,6 +123,18 @@
     }
   }
 
+  async function emailVerification() {
+    const user = auth.currentUser;
+    
+    try {
+      user.sendEmailVerification();
+      alert("인증 메일이 전송되었습니다. 이메일을 확인해 주세요.")
+    }
+    catch {
+      alert("인증 과정에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+    }
+  }
+
   const auth = firebase.auth();
 
   async function signUp(email, password) {
@@ -128,11 +153,40 @@
     await auth.signOut();
   }
 
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      console.log("User is signed in:", user);
-    } else {
-      console.log("No user is signed in.");
+  auth.onAuthStateChanged(async (user) => {
+    if (type.value == "verification") {
+      if (user == null) {
+        router.push({name: "Auth", params: {type: "login"}});
+        return;
+      }
+      if (user.emailVerified) {
+        alert("이메일 인증이 완료되었습니다");
+        router.push({name: "Home"});
+        return;
+      }
+
+      email.value = user.email;
+    }
+    else if (type.value == "logout") {
+      if (isSignout) {
+        return;
+      }
+
+      if (user == null) {
+        alert("이미 로그아웃 되었습니다");
+      }
+      else {
+        try {
+          isSignout = true;
+          await signOut();
+          alert("로그아웃되었습니다");
+        }
+        catch {
+          alert("문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
+      }
+
+      router.push({name: "Home"});
     }
   });
 
@@ -148,6 +202,10 @@
         return;
       }
       else if (value == "verification") {
+        type.value = value;
+        return;
+      }
+      else if (value == "logout") {
         type.value = value;
         return;
       }
@@ -190,12 +248,12 @@ input {
 .submit {
   border: none;
   height: 30px;
-  width: 70px;
   border-radius: 10px;
   background-color: var(--p1);
   box-shadow: 0px 3px 7px var(--b4);
   color: var(--b1);
-  font-family: 'Black Han Sans';
+  font-size: 15px;
+  padding: 0px 10px;
   margin-top: 30px
 }
 .link {
