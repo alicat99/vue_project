@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="title">{{ testName }}</div>
+    <div class="title font-title">{{ testName }}</div>
     <ul v-if="fileList.length">
       <div v-for="(item, index) in fileList" :key="index">
         <button class="file" @click="download(item.url, item.name)">
@@ -54,7 +54,6 @@
 
 <style scoped>
 .title {
-  font-family: 'Black Han Sans';
   font-size: 30px;
   color: var(--p3);
   margin-top: 30px;

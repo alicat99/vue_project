@@ -1,10 +1,10 @@
 <template>
   <header>
       <div class="header">
-        <a href="/" class="name">
+        <a href="/" class="name font-title">
           SOONGSIL<spen class="highlight">.US</spen>
         </a>
-        <button @click="linkToLogin" v-if="isInitiated && userData == null">
+        <button @click="linkToLogin" v-if="isInitiated && userData == null" class="font-title">
           로그인
         </button>
       </div>
@@ -41,7 +41,6 @@ auth.onAuthStateChanged((user) => {
   height: 50px;
 }
 .header {
-  font-family: 'Black Han Sans';
   position: fixed;
   background-color: var(--p1);
   width: 100%;
@@ -67,6 +66,5 @@ button {
   padding: 5px 10px;
   color: var(--p3);
   font-size: 18px;
-  font-family: "Black Han Sans";
 }
 </style>

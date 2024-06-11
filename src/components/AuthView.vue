@@ -1,7 +1,7 @@
 <template>
   <div class="viewport">
     <div class="container" v-if="type == 'login' || type == 'register'">
-      <div class="title">
+      <div class="title font-title">
         <div v-if="type == 'login'">로그인</div>
         <div v-if="type == 'register'">회원가입</div>
       </div>
@@ -229,7 +229,6 @@
   padding: 20px 20px;
 }
 .title {
-  font-family: 'Black Han Sans';
   font-size: 30px;
   color: var(--p3);
   margin-top: 30px;

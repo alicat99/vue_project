@@ -98,7 +98,6 @@ input {
   border-bottom-right-radius: 10px;
   background-color: var(--p1);
   color: var(--b1);
-  font-family: 'Pretendard-Regular';
   flex-shrink: 0;
 }
 .result-container {
