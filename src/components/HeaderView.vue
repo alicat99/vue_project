@@ -1,7 +1,8 @@
 <template>
   <header>
       <div class="header">
-        <a href="/" class="name font-title">
+        <a href="/" class="name font-title title-box">
+          <img src="@/assets/icon.png" width="40px"/>
           SOONGSIL<spen class="highlight">.US</spen>
         </a>
         <button @click="linkToLogin" v-if="isInitiated && userData == null" class="font-title">
@@ -66,5 +67,14 @@ button {
   padding: 5px 10px;
   color: var(--p3);
   font-size: 18px;
+}
+.title-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+img {
+  margin-right: 10px;
 }
 </style>
