@@ -120,7 +120,6 @@ ul {
   color: var(--p3);
   font-size: 15px;
   text-align: left;
-  flex-grow: 1;
 }
 .result-tag {
   background-color: #a08797;
