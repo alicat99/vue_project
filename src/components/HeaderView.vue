@@ -2,10 +2,10 @@
   <header>
       <div class="header">
         <a href="/" class="name font-title title-box">
-          <img src="@/assets/icon.png" width="40px"/>
+          <img src="@/assets/icon.png" width="40px" height="40px"/>
           SOONGSIL<spen class="highlight">.US</spen>
         </a>
-        <button @click="linkToLogin" v-if="isInitiated && userData == null" class="font-title">
+        <button @click="linkToLogin" v-if="isInitiated && userData == null" class="login font-title">
           로그인
         </button>
       </div>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import { useRouter } from 'vue-router';
@@ -61,7 +61,7 @@ auth.onAuthStateChanged((user) => {
 .highlight {
   color: var(--p3);
 }
-button {
+.login {
   background-color: transparent;
   border: none;
   padding: 5px 10px;

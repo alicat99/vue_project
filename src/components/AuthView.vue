@@ -1,30 +1,34 @@
 <template>
   <div class="viewport">
     <div class="container" v-if="type == 'login' || type == 'register'">
+      
       <div class="title font-title">
         <div v-if="type == 'login'">로그인</div>
         <div v-if="type == 'register'">회원가입</div>
       </div>
+
+      <button class="link" @click="link">
+        <div v-if="type == 'login'">처음이신가요? 회원가입하기</div>
+        <div v-if="type == 'register'">이미 가입하셨나요? 로그인하기</div>
+      </button>
+      
       <div>
         <input placeholder="이메일을 입력하세요" id="username" v-model="email">
       </div>
+      
       <div>
-        <input placeholder="비밀번호를 입력하세요" id="password" type="password" v-model="password">
+        <input placeholder="비밀번호를 입력하세요" id="password" type="password" v-model="password" @keydown.enter="submit">
       </div>
-      <button class="submit" @click="submit">
+      
+      <button :class="{'submit': true, 'submit-loading': buttonDisable}" :disabled="buttonDisable" @click="submit">
         <div v-if="type == 'login'">로그인</div>
         <div v-if="type == 'register'">회원가입</div>
-      </button>
-      
-      <button class="link" @click="link">
-        <div v-if="type == 'login'">회원가입을 하지 않았나요?</div>
-        <div v-if="type == 'register'">이미 가입했나요?</div>
       </button>
     </div>
 
     <div class="container" v-if="type == 'verification'">
       {{ email }} 계정의 이메일 인증을 완료해주세요!
-      <button class="submit" @click="emailVerification">
+      <button :class="{'submit': true, 'submit-loading': buttonDisable}" :disabled="buttonDisable" @click="emailVerification">
         인증 메일 전송하기
       </button>
     </div>
@@ -41,6 +45,7 @@
   const email = ref('');
   const password = ref('');
   const type = ref('');
+  const buttonDisable = ref(false);
   
   const route = useRoute();
   const router = useRouter();
@@ -67,6 +72,7 @@
       return;
     }
 
+    buttonDisable.value = true;
     if (type.value == 'login') {
       try {
         const user = await signIn(email.value, password.value);
@@ -97,6 +103,7 @@
         alert(errorMessage);
       }
     }
+    buttonDisable.value = false;
   }
 
   function getErrorMessage(errorCode) {
@@ -124,15 +131,17 @@
   }
 
   async function emailVerification() {
-    const user = auth.currentUser;
-    
+    buttonDisable.value = true;
+
     try {
-      user.sendEmailVerification();
+      const user = auth.currentUser;
+      await user.sendEmailVerification();
       alert("인증 메일이 전송되었습니다. 이메일을 확인해 주세요.")
     }
     catch {
       alert("인증 과정에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
     }
+    buttonDisable.value = false;
   }
 
   const auth = firebase.auth();
@@ -219,9 +228,9 @@
   background-color: var(--b1);
   border-radius: 10px;
   box-shadow:inset 0px 3px 10px var(--b4);
-  width: 70vw;
-  height: 50vh;
-  margin: 10vh auto;
+  width: 70vi;
+  height: 60vb;
+  margin: 10vb auto;
   display: flex;
   align-items: center;
   justify-content: baseline;
@@ -232,7 +241,7 @@
   font-size: 30px;
   color: var(--p3);
   margin-top: 30px;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
 }
 input {
   border: none;
@@ -253,10 +262,13 @@ input {
   color: var(--b1);
   font-size: 15px;
   padding: 0px 10px;
-  margin-top: 30px
+  margin-top: calc(10vb - 30px);
+}
+.submit-loading {
+  background-color: grey;
 }
 .link {
-  margin-top: 20px;
+  margin-bottom: 20px;
   border: none;
   background-color: transparent;
   color: gray;

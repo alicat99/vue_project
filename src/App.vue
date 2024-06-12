@@ -16,6 +16,7 @@ import HeaderView from './components/HeaderView.vue'
   --b3: #f7bee1;
   --b4: #e399c7;
   --p1: #8B93FF;
+  --p1m: #757ef2;
   --p2: #5755FE;
   --p3: #282785;
 }

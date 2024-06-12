@@ -8,13 +8,13 @@
     </div>
 
     <ul v-if="resultList.length">
-      <div v-for="(item, index) in resultList" :key="index" class="result-container">
-        <router-link :to="{ name: 'Info', params: { id: item.name }}" class="result-url">
+      <router-link :to="{ name: 'Info', params: { id: item.name }}" v-for="(item, index) in resultList" :key="index" class="result-container">
+        <div class="result-url">
           {{ item.name }}
-        </router-link>
+        </div>
         <span v-if="item.problem" class="result-tag result-tag1">문제</span>
         <span v-if="item.answer" class="result-tag result-tag2">정답</span>
-      </div>
+      </router-link>
     </ul>
 
     <div v-if="!resultList.length && queried">
@@ -110,6 +110,7 @@ input {
   display: flex;
   align-items: center;
   padding: 10px;
+  text-decoration-line: none;
 }
 ul {
   padding-left: 20px;
@@ -119,16 +120,17 @@ ul {
   color: var(--p3);
   font-size: 15px;
   text-align: left;
-  text-decoration-line: none;
+  flex-grow: 1;
 }
 .result-tag {
   background-color: #a08797;
   border-radius: 15px;
   padding-top: 3px;
   padding-bottom: 3px;
-  padding-right: 7px;
-  padding-left: 7px;
   margin-left: 7px;
+  flex-basis: 50px;
+  flex-grow: 0;
+  flex-shrink: 0;
   color: var(--b1);
 }
 .result-tag1 {
