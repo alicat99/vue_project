@@ -4,6 +4,7 @@ import router from './router'
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
+import VueCookies from "vue-cookies";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCfZdlz9mGnYtB8NGwgdKFP1n6yYwIr1DU",
@@ -17,6 +18,7 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-const app = createApp(App)
-app.use(router)
-app.mount('#app')
+const app = createApp(App);
+app.use(router);
+app.mount('#app');
+app.use(VueCookies);

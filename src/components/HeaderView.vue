@@ -34,6 +34,7 @@ const isInitiated = ref(false);
 auth.onAuthStateChanged((user) => {
   isInitiated.value = true;
   userData.value = user;
+  user.getIdToken(true).then(token => console.log(token));
   });
 </script>
 

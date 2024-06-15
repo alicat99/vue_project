@@ -37,10 +37,11 @@
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, inject } from 'vue';
   import firebase from 'firebase/compat/app';
   import 'firebase/compat/auth';
   import { useRoute, useRouter } from 'vue-router';
+  import CryptoJS from 'crypto-js';
 
   const email = ref('');
   const password = ref('');
@@ -49,6 +50,8 @@
   
   const route = useRoute();
   const router = useRouter();
+
+  const $cookies = inject('$cookies');
 
   let isSignout = false;
 
@@ -76,6 +79,8 @@
     if (type.value == 'login') {
       try {
         const user = await signIn(email.value, password.value);
+        
+        createHash(email.value, password.value);
 
         if (!user.emailVerified) {
           alert("성공적으로 로그인되었습니다. 이메일 인증을 완료해주세요.")
@@ -94,6 +99,8 @@
       try {
         await signUp(email.value, password.value);
 
+        createHash(email.value, password.value);
+
         alert("성공적으로 회원가입되었습니다. 이메일 인증을 완료해주세요.")
         router.push({name: "Auth", params: {type: "verification"}});
       }
@@ -104,6 +111,13 @@
       }
     }
     buttonDisable.value = false;
+  }
+
+  function createHash(email, password) {
+    const hash = CryptoJS.SHA256(email + password);
+    const hashString = hash.toString(CryptoJS.enc.Hex);
+
+    $cookies.set("userHash", hashString, "365d");
   }
 
   function getErrorMessage(errorCode) {
