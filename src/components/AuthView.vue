@@ -8,8 +8,8 @@
       </div>
 
       <button class="link" @click="link">
-        <div v-if="type == 'login'">처음이신가요? 회원가입하기</div>
-        <div v-if="type == 'register'">이미 가입하셨나요? 로그인하기</div>
+        <div v-if="type == 'login'">처음이신가요?<span class="font-title" style="font-size: 20px">  회원가입하기</span></div>
+        <div v-if="type == 'register'">이미 가입하셨나요?<span class="font-title" style="font-size: 20px">  로그인하기</span></div>
       </button>
       
       <div>
@@ -252,7 +252,7 @@
   padding: 20px 20px;
 }
 .title {
-  font-size: 30px;
+  font-size: 35px;
   color: var(--p3);
   margin-top: 30px;
   margin-bottom: 15px;
