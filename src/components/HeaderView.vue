@@ -36,6 +36,20 @@ auth.onAuthStateChanged((user) => {
   userData.value = user;
   if (user != null) {
     user.getIdToken(true).then(token => console.log(token));
+
+    if (!user.emailVerified) {
+      const currentRoute = router.currentRoute.value.fullPath;
+      if (currentRoute != '/auth/verification' && currentRoute != '/auth/logout') {
+        alert("이메일 인증을 완료해주세요");
+        router.push({name: "Auth", params: {type: "verification"}});
+      }
+    }
+  }
+  else {
+    const currentRoute = router.currentRoute.value.fullPath;
+    if (currentRoute == '/') {
+      router.push({name: "Auth", params: {type: "register"}});
+    }
   }
   });
 </script>
@@ -54,6 +68,7 @@ auth.onAuthStateChanged((user) => {
   justify-content: space-between;
   box-sizing: border-box;
   padding: 10px;
+  z-index: 2; /* adjust as needed */
 }
 .name {
   color: var(--b1);

@@ -1,6 +1,6 @@
 <template>
-  <div class="viewport">
-    <div class="container" v-if="type == 'login' || type == 'register'">
+  <div class="viewport" v-if="type === 'login' || type == 'verification'">
+    <div class="container" v-if="type == 'login'">
       
       <div class="title font-title">
         <div v-if="type == 'login'">로그인</div>
@@ -12,12 +12,20 @@
         <div v-if="type == 'register'">이미 가입하셨나요?<span class="font-title" style="font-size: 20px">  로그인하기</span></div>
       </button>
       
-      <div>
-        <input placeholder="이메일을 입력하세요" id="username" v-model="email">
+      <div class="input-container">
+        <input placeholder="이메일을 입력하세요" id="username" v-model="email" class="email-input" />
+        <span class="email-suffix">@soongsil.us</span>
       </div>
-      
+
       <div>
-        <input placeholder="비밀번호를 입력하세요" id="password" type="password" v-model="password" @keydown.enter="submit">
+        <input
+          placeholder="비밀번호를 입력하세요"
+          id="password"
+          type="password"
+          v-model="password"
+          @keydown.enter="submit"
+          class="input-password"
+        />
       </div>
       
       <button :class="{'submit': true, 'submit-loading': buttonDisable}" :disabled="buttonDisable" @click="submit">
@@ -31,9 +39,15 @@
       <button :class="{'submit': true, 'submit-loading': buttonDisable}" :disabled="buttonDisable" @click="emailVerification">
         인증 메일 전송하기
       </button>
+      <button :class="{'submit': true, 'submit-loading': buttonDisable}" :disabled="buttonDisable" @click="linkToLogout">
+        로그아웃하기
+      </button>
     </div>
   </div>
   
+  <div v-if="type === 'register'">
+    <SignUpView /> <!-- SignUpView 컴포넌트 추가 -->
+  </div>
 </template>
 
 <script setup>
@@ -42,6 +56,9 @@
   import 'firebase/compat/auth';
   import { useRoute, useRouter } from 'vue-router';
   import CryptoJS from 'crypto-js';
+  import SignUpView from './SignUpView.vue';
+  
+  const auth = firebase.auth();
 
   const email = ref('');
   const password = ref('');
@@ -66,8 +83,9 @@
       alert('이메일을 입력해주세요');
       return;
     }
-    if (!emailValidChk(email.value)) {
-      alert('이메일이 유효하지 않거나 soongsil.net의 이메일이 아닙니다');
+    const email_full = email.value + "@soongsil.net"
+    if (!emailValidChk(email_full)) {
+      alert('이메일이 유효하지 않습니다');
       return;
     }
     if (password.value.length == 0) {
@@ -78,9 +96,9 @@
     buttonDisable.value = true;
     if (type.value == 'login') {
       try {
-        const user = await signIn(email.value, password.value);
+        const user = await signIn(email_full, password.value);
         
-        createHash(email.value, password.value);
+        createHash(email_full, password.value);
 
         if (!user.emailVerified) {
           alert("성공적으로 로그인되었습니다. 이메일 인증을 완료해주세요.")
@@ -95,6 +113,7 @@
         alert("로그인에 실패하였습니다. 이메일과 비밀번호를 확인해주세요.")
       }
     }
+    /*
     else if (type.value == 'register') {
       try {
         await signUp(email.value, password.value);
@@ -109,7 +128,7 @@
         var errorMessage = getErrorMessage(errorCode);
         alert(errorMessage);
       }
-    }
+    }*/
     buttonDisable.value = false;
   }
 
@@ -158,12 +177,8 @@
     buttonDisable.value = false;
   }
 
-  const auth = firebase.auth();
-
-  async function signUp(email, password) {
-    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    const user = userCredential.user;
-    return user
+  function linkToLogout() {
+    router.push({name: "Auth", params: {type: "logout"}});
   }
 
   async function signIn(email, password) {
@@ -257,14 +272,40 @@
   margin-top: 30px;
   margin-bottom: 15px;
 }
-input {
+
+.input-password {
   border: none;
   border-radius: 15px;
   width: 200px;
   height: 30px;
   background-color: white;
-  box-shadow: 0px 3px 7px var(--b4);
+  box-shadow: 0px 3px 7px var(--p3);
   margin-bottom: 20px;
+  padding: 0px 10px;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  border-radius: 15px;
+  background-color: white;
+  box-shadow: 0px 3px 7px var(--p3);
+  margin-bottom: 20px;
+  padding: 0 0px;
+}
+
+.email-input {
+  border: none;
+  flex: 1;
+  height: 30px;
+  padding: 0px 10px;
+  border-radius: 15px 0px 0px 15px;
+  width: 130px;
+}
+
+.email-suffix {
+  color: var(--p3);
+  font-weight: bold;
   padding: 0px 10px;
 }
 .submit {
