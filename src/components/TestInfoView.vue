@@ -3,7 +3,7 @@
     <div class="title font-title">{{ testName }}</div>
     <ul v-if="fileList.length && userData != null" class="file-container">
       <div v-for="(item, index) in fileList" :key="index">
-        <button class="file" @click="download(item.url, item.name)">
+        <button class="file" @click="download(item.url, item.name)" :class="{ 'downloading': isDownloading[item.name] }">
           {{ item.name }}
         </button>
       </div>
@@ -35,14 +35,21 @@
   const auth = firebase.auth();
   const userData = ref(null);
   const isInitiated = ref(false);
+  
+  const isDownloading = ref({});
 
   async function download(url, name) {
     try {
+      isDownloading.value[name] = true; // 다운로드 중임을 표시
+      setTimeout(() => {
+        isDownloading.value[name] = false; // 3초 후 다운로드 중이 아님으로 변경
+      }, 1000);
+
       const token = await userData.value.getIdToken(true);
       const response = await axios({
         url: url,
         method: 'GET',
-        responseType: 'blob', // important
+        responseType: 'blob',
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -50,7 +57,7 @@
       const fileURL = window.URL.createObjectURL(new Blob([response.data]));
       const fileLink = document.createElement('a');
       fileLink.href = fileURL;
-      fileLink.setAttribute('download', name); // file name
+      fileLink.setAttribute('download', name);
       document.body.appendChild(fileLink);
       fileLink.click();
       document.body.removeChild(fileLink);
@@ -112,5 +119,8 @@
   padding: 5px 10px;
   color: var(--p3);
   font-size: 18px;
+}
+.file.downloading {
+  background-color: gray;
 }
 </style>

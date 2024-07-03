@@ -35,14 +35,20 @@ function filterKeys(data, searchTerm) {
       const includesAllTerms = searchTerms.every(term => key.includes(term));
       if (includesAllTerms) {
           const dd = data[key];
-          let problem = false;
-          let answer = false;
+          let problem = null;
+          let answer = null;
           for (const key2 in dd) {
             if (key2.includes("문제")) {
-              problem = true;
+              problem = {
+                "name": key2,
+                "url": `https://firebasestorage.googleapis.com/v0/b/soongsil-af5dc.appspot.com/o/files%2F${dd[key2]}?alt=media`
+              };
             }
             else if (key2.includes("정답")) {
-              answer = true;
+              answer = {
+                "name": key2,
+                "url": `https://firebasestorage.googleapis.com/v0/b/soongsil-af5dc.appspot.com/o/files%2F${dd[key2]}?alt=media`
+              };
             }
           }
 
