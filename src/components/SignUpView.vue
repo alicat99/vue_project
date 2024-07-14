@@ -8,6 +8,11 @@
     <div style="font-size:20px; color:var(--b1); margin-top: 50px" class="fade-in">
       숭실고등학교의 기출문제 모음 사이트입니다
     </div>
+
+    <router-link :to="{ name: 'Upload' }" class="font-title fade-in" style="font-size: 20px; margin-top: 20px; margin-bottom: 20px; color: var(--p3)">
+      (문화상품권 이벤트 진행중💵)
+    </router-link>
+
     <div style="display: flex; align-items: center; color: white; font-size: 20px; margin-bottom: 30px;" class="fade-in">
       <img src="@/assets/dys.png" width="160px"/> X <span style="font-size: 40px; margin-left: 20px" class="font-title">PCL</span>
     </div>
@@ -41,10 +46,14 @@
     </div>
 
     <div class="title font-title fade-in">회원가입</div>
+    
+    <button class="link fade-in" @click="link">
+        <div>이미 가입하셨나요?<span class="font-title" style="font-size: 20px">  로그인하기</span></div>
+    </button>
 
     <div class="input-container fade-in">
       <input placeholder="이메일을 입력하세요" id="username" v-model="email" class="email-input" />
-      <span class="email-suffix">@soongsil.us</span>
+      <span class="email-suffix">@soongsil.net</span>
     </div>
 
     <div>
@@ -66,7 +75,7 @@
 
 <script setup>
 import { ref, inject, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import CryptoJS from 'crypto-js';
@@ -76,6 +85,7 @@ const password = ref('');
 const buttonDisable = ref(false);
 
 const router = useRouter();
+const route = useRoute();
 
 const auth = firebase.auth();
 
@@ -131,7 +141,8 @@ async function submit() {
     await signUp(email_full, password.value);
     createHash(email_full, password.value);
     alert('성공적으로 회원가입되었습니다. 이메일 인증을 완료해주세요.');
-    router.push({ name: 'Auth', params: { type: 'verification' } });
+    const redirect = route.query.redirect ?? "Home";
+    router.push({ name: 'Auth', params: {type: 'verification'}, query: {'redirect': redirect} });
   } catch (error) {
     var errorCode = error.code;
     var errorMessage = getErrorMessage(errorCode);
@@ -145,6 +156,11 @@ function createHash(email, password) {
     const hashString = hash.toString(CryptoJS.enc.Hex);
 
     $cookies.set("userHash", hashString, "365d");
+}
+
+function link() {
+  const redirect = route.query.redirect ?? "Home";
+  router.push({name: "Auth", params: {type: "login"}, query: {'redirect': redirect}});
 }
 
 onMounted(() => {
@@ -303,7 +319,7 @@ ul {
 }
 .result-url {
   color: var(--p3);
-  font-size: 15px;
+  font-size: 10px;
   text-align: left;
 }
 .result-tag {
@@ -322,6 +338,13 @@ ul {
 }
 .result-tag2 {
   background-color: var(--p3);
+}
+.link {
+  margin-bottom: 20px;
+  border: none;
+  background-color: transparent;
+  color: var(--b1);
+  text-decoration: underline;
 }
 </style>
 

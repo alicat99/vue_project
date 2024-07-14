@@ -14,7 +14,7 @@
       
       <div class="input-container">
         <input placeholder="이메일을 입력하세요" id="username" v-model="email" class="email-input" />
-        <span class="email-suffix">@soongsil.us</span>
+        <span class="email-suffix">@soongsil.net</span>
       </div>
 
       <div>
@@ -106,29 +106,14 @@
         }
         else {
           alert("성공적으로 로그인되었습니다")
-          router.push({name: "Home"});
+          const redirect = route.query.redirect ?? "Home";
+          router.push({name: redirect});
         }
       }
       catch(error) {
         alert("로그인에 실패하였습니다. 이메일과 비밀번호를 확인해주세요.")
       }
     }
-    /*
-    else if (type.value == 'register') {
-      try {
-        await signUp(email.value, password.value);
-
-        createHash(email.value, password.value);
-
-        alert("성공적으로 회원가입되었습니다. 이메일 인증을 완료해주세요.")
-        router.push({name: "Auth", params: {type: "verification"}});
-      }
-      catch(error) {
-        var errorCode = error.code;
-        var errorMessage = getErrorMessage(errorCode);
-        alert(errorMessage);
-      }
-    }*/
     buttonDisable.value = false;
   }
 
@@ -155,11 +140,12 @@
   }
 
   function link() {
+    const redirect = route.query.redirect ?? "Home";
     if (type.value == 'login') {
-      router.push({name: "Auth", params: {type: "register"}});
+      router.push({name: "Auth", params: {type: "register"}, query: {'redirect': redirect}});
     }
     else if (type.value == 'register') {
-      router.push({name: "Auth", params: {type: "login"}});
+      router.push({name: "Auth", params: {type: "login"}, query: {'redirect': redirect}});
     }
   }
 
@@ -197,9 +183,11 @@
         router.push({name: "Auth", params: {type: "login"}});
         return;
       }
-      if (user.emailVerified) {
+      if (user.emailVerified && !emailVerified.value) {
+        emailVerified.value = true;
         alert("이메일 인증이 완료되었습니다");
-        router.push({name: "Home"});
+        const redirect = route.query.redirect ?? "Home";
+        router.push({name: redirect});
         return;
       }
 
@@ -250,6 +238,23 @@
     }
     router.push({name: "Home"});
   })
+
+  const emailVerified = ref(false);
+
+  document.addEventListener('visibilitychange', async function() {
+    const value = route.params.type;
+    if (document.visibilityState === 'visible' && value == "verification") {
+      const user = auth.currentUser;
+      await user.reload();
+      if (user.emailVerified && !emailVerified.value) {
+        emailVerified.value = true;
+        alert("이메일 인증이 완료되었습니다");
+        const redirect = route.query.redirect ?? "Home";
+        router.push({name: redirect});
+        return;
+      }
+    }
+  });
 </script>
 
 <style scoped>
