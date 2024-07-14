@@ -35,6 +35,7 @@
 
     <div class="files-container" style="margin-top: 50px;">
       파일을 업로드하고 <span style="font-size: large; color: var(--p1)" class="font-title">{{ coinNext }}🪙</span>를 받으세요!
+      
       <div style="color: gray; font-size: small;">첫 업로드: 3🪙, 두번째 업로드: 7🪙, 이후: 1🪙</div>
       <input type="file" id="file" @change="handleFileUpload" hidden multiple/>
       <label for="file" class="file-label" style="margin-top: 10px; margin-bottom: 10px;">
@@ -43,7 +44,7 @@
       </label>
 
       <div style="color: gray">
-        - 업로드 된 파일 -
+        - 업로드 된 파일 ({{ uplaodedCount }} / {{ maxUploadCount }}) -
       </div>
 
       <div v-for="fileInfo in uploadedFiles" :key="fileInfo[0]" style="margin-top: 10px" class="file-item" :class="{'file-item-uploading': fileInfo[2] == 1, 'file-item-fail': fileInfo[2] == 2, 'file-item-success': fileInfo[2] == 3}">
@@ -78,15 +79,21 @@
     <img src="@/assets/explain2.png" style="margin-top: 30px; width: min(70%, 400px)">
     <br>
     <br>
-    4. 캡쳐한 이미지를 업로드하고 보상을 받으세요!🪙
+    4. 회원가입 후 캡쳐한 이미지를 업로드합니다.
+    
+    <router-link :to="{name: 'Auth', params: {type: 'register'}, query: {redirect: 'Upload'}}" class="font-title" style="font-size: 20px; margin-top: 20px; margin-bottom: 20px; color: var(--p3)">
+      회원가입하기
+    </router-link>
+
+    <div style="height: 300px;"></div>
   </div>
 
   <div id="loading-overlay" v-if="!isInitiated">
     <div class="spinner"></div>
   </div>
 
-  <div v-if="isPopupVisible" class="popup" @click.self="closePopup">
-    <div class="popup-content">
+  <div v-if="isPopupVisible" class="popup">
+    <div class="popup-content" v-if="popupType == 0">
       <span class="close" @click="closePopup">&times;</span>
       <h2 class="font-title">상품 수령</h2>
       축하합니다!<br>
@@ -94,11 +101,26 @@
       아래에 전화번호를 적어 주시면 문화상품권을 문자로 전송해드리겠습니다!<br>
       <input style="border-radius: 10px" v-model="inputPhoneNumber" autocomplete="off" @keydown.enter="setNumber"/>
     </div>
+    <div class="popup-content" v-if="popupType == 1">
+      <h2 class="font-title">개인정보처리방침</h2>
+      계속하시려면 개인정보처리방침을 읽고 동의해 주십시오
+      <br>
+      <br>
+      <button onclick="window.location.href = 'https://pacific-squash-d43.notion.site/soongsil-us-6440fc1084a74e05902daed029019e9f?pvs=4';">개인정보처리방침</button>
+      <br>
+      <br>
+      <router-link :to="{name: 'Home'}" class="font-title" style="font-size: 20px; color: var(--p3); text-decoration: none;">
+        동의하지 않음
+      </router-link>
+      <div @click="closePopup2" class="font-title" style="font-size: 20px; margin-left: 50px; color: var(--p3); display: inline;">
+        동의함
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, inject } from 'vue';
+import { ref, inject, watch, onMounted } from 'vue';
 import JSConfetti from "js-confetti";
 import DropdownMenuElement from './element/DropdownMenuElement.vue';
 
@@ -106,6 +128,12 @@ const awsUploadUrl = 'https://qjyiqzal3k.execute-api.ap-northeast-2.amazonaws.co
 const awsEventUrl = 'https://qw8qr9zgsl.execute-api.ap-northeast-2.amazonaws.com/default/uploadEvent';
 
 async function handleFileUpload(event) {
+  if (userData.value == null) {
+    if (confirm('회원가입 후 이벤트에 참여하실 수 있습니다.\n회원가입 페이지로 이동하시겠습니까?')) {
+      router.push({name: "Auth", params: {type: "register"}, query: {redirect: 'Upload'}});
+    }
+    return;
+  }
   const files = event.target.files;
   const keys = [];
   for (let i = 0; i < files.length; i++) {
@@ -125,11 +153,6 @@ async function handleFileUpload(event) {
 async function uploadFile(file, key) {
   if (!isInitiated.value) {
     alert('잠시 후 다시 시도해주세요');
-    return;
-  }
-  if (userData.value == null) {
-    alert('회원가입 후 이벤트에 참여하실 수 있습니다');
-    router.push({name: "Auth", params: {type: "register"}, query: {redirect: 'Upload'}});
     return;
   }
 
@@ -321,9 +344,15 @@ const gridItemFade = ref([
   false, false, false,
   false, false, false,
   false, false, false,
-])
+]);
 
-const uploadedFiles = ref([])
+const uploadedFiles = ref([]);
+const uplaodedCount = ref(0);
+const maxUploadCount = ref(10);
+
+watch(uploadedFiles, (newList, oldList) => {
+  uplaodedCount.value = newList.filter(item => item[2] === 0).length;
+}, { deep: true });
 
 async function updateVisibility() {
   const acquired = userDoc.value.acquired_items ?? [];
@@ -364,6 +393,7 @@ async function updateVisibility() {
 
   if (gridItemVisibility.value.find(item => item == false) === undefined) {
     await delay(500);
+    popupType.value = 0;
     openPopup();
   }
 }
@@ -421,6 +451,18 @@ async function getUserDoc(user) {
   catch (err) {
     console.error(err);
   }
+
+  const email = user.email;
+  const match = email.match(/^(\d+)-/);
+  if (match) {
+    const year = parseInt(match[1]);
+    const currentYear = configs.value.current_year || 2024;
+    let grade = currentYear - 2000 - year + 1;
+    grade = Math.max(1, Math.min(3, grade));
+
+    maxUploadCount.value = grade * 4 - 2
+  }
+
   updateVisibility();
   
   const docRef2 = db.collection('event').doc(docId);
@@ -446,6 +488,7 @@ async function getConfigs() {
 }
 
 const isPopupVisible = ref(false);
+const popupType = ref(0);
 
 const openPopup = () => {
   isPopupVisible.value = true;
@@ -465,6 +508,20 @@ async function setNumber() {
   })
 
   alert('문화상품권은 24시간 이내에 지정된 번호로 전송됩니다');
+
+  closePopup();
+}
+
+onMounted(() => {
+  const accept = $cookies.get('accept');
+  if (accept == null) {
+    popupType.value = 1;
+    openPopup();
+  }
+})
+
+function closePopup2() {
+  $cookies.set("accept", true, "365d");
 
   closePopup();
 }
@@ -558,7 +615,7 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 100;
 }
 .spinner {
   border: 10px solid #f3f3f3;
@@ -591,7 +648,7 @@ button {
 .popup {
   display: block;
   position: fixed;
-  z-index: 1;
+  z-index: 101;
   left: 0;
   top: 0;
   width: 100%;

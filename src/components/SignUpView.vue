@@ -164,8 +164,14 @@ function link() {
 }
 
 onMounted(() => {
+  history.scrollRestoration = "manual";
+  window.scrollTo(0, 0);
+
   // 페이드 인 애니메이션 트리거
   const fadeInElements = document.querySelectorAll('.fade-in');
+  fadeInElements.forEach((element, index) => {
+    element.classList.remove('visible');
+  });
   fadeInElements.forEach((element, index) => {
     setTimeout(() => {
       element.classList.add('visible');
