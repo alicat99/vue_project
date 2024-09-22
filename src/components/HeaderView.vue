@@ -1,18 +1,17 @@
 <template>
   <header>
       <div class="header">
+
         <a href="/" class="name font-title title-box">
           <img src="@/assets/icon.png" width="40px" height="40px"/>
-          SOONGSIL<spen class="highlight">.US</spen>
+          SOONGSIL<spen style="color: var(--p3);">.US</spen>
         </a>
+        
         <button @click="linkToLogin" v-if="isInitiated && userData == null" class="login font-title">
           로그인
         </button>
-        <button @click="linkToEvent" v-if="isInitiated && userData != null" class="login font-title" style="font-size: 15px;">
-          문상 이벤트💵
-        </button>
       </div>
-      <div class="placeholder"></div>
+      <div style="height: 50px;"></div>
   </header>
 
 </template>
@@ -27,10 +26,6 @@ const router = useRouter();
 
 function linkToLogin() {
   router.push({name: "Auth", params: {type: "login"}});
-}
-
-function linkToEvent() {
-  router.push({name: "Upload"});
 }
 
 const auth = firebase.auth();
@@ -57,19 +52,10 @@ auth.onAuthStateChanged((user) => {
       }
     }
   }
-  else {
-    const currentRoute = router.currentRoute.value.path;
-    if (currentRoute == '/') {
-      router.push({name: "Auth", params: {type: "register"}});
-    }
-  }
-  });
+});
 </script>
 
 <style scoped>
-.placeholder {
-  height: 50px;
-}
 .header {
   position: fixed;
   background-color: var(--p1);
@@ -80,16 +66,13 @@ auth.onAuthStateChanged((user) => {
   justify-content: space-between;
   box-sizing: border-box;
   padding: 10px;
-  z-index: 2; /* adjust as needed */
+  z-index: 2;
 }
 .name {
   color: var(--b1);
   font-size: 20px;
   text-align: left;
   text-decoration-line: none;
-}
-.highlight {
-  color: var(--p3);
 }
 .login {
   background-color: transparent;

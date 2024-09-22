@@ -3,7 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../components/HomeView.vue';
 import TestInfoView from '../components/TestInfoView.vue';
 import AuthView from '../components/AuthView.vue';
-import UploadView from '../components/UploadView.vue';
+import RiroBoardView from '@/components/RiroBoardView.vue';
+import RiroLoginView from '@/components/RiroLoginView.vue';
 
 const routes = [
   {
@@ -22,9 +23,14 @@ const routes = [
     component: AuthView,
   },
   {
-    path: '/upload',
-    name: 'Upload',
-    component: UploadView,
+    path: '/riro/board',
+    name: 'RiroBoard',
+    component: RiroBoardView,
+  },
+  {
+    path: '/riro/login',
+    name: 'RiroLogin',
+    component: RiroLoginView,
   }
 ];
 

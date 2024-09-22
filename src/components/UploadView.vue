@@ -22,7 +22,7 @@
     
     <br>
     {{ coinLeft }}🪙
-    <button @click="tryEvent" style="margin-top: 10px" :class="{'event-button-loading': eventButtonType == 1}">
+    <button @click="tryEvent" style="margin-top: 10px" :class="{'event-button-loading': eventButtonType == 1, 'event-button-event': eventButtonType == 2}">
       {{ eventButtonMessages[eventButtonType] }}
       <span v-if="eventButtonType == 2">{{ eventCount }}🪙</span>
     </button>
@@ -34,14 +34,16 @@
     />
 
     <div class="files-container" style="margin-top: 50px;">
-      파일을 업로드하고 <span style="font-size: large; color: var(--p1)" class="font-title">{{ coinNext }}🪙</span>를 받으세요!
+      파일을 업로드하고 <span style="font-size: 30px; color: var(--p1)" class="font-title">{{ coinNext }}</span>🪙를 받으세요!
       
       <div style="color: gray; font-size: small;">첫 업로드: 3🪙, 두번째 업로드: 7🪙, 이후: 1🪙</div>
       <input type="file" id="file" @change="handleFileUpload" hidden multiple/>
       <label for="file" class="file-label" style="margin-top: 10px; margin-bottom: 10px;">
         성적 파일 업로드📃
-        <div style="color: #dddddd; font-size: small;">(여러 파일을 동시에 업로드할 수 있어요)</div>
       </label>
+      <div class="file-label" style="margin-bottom: 10px;" @click="riroLogin">
+        또는 리로스쿨에 로그인하고 한번에 입력
+      </div>
 
       <div style="color: gray">
         - 업로드 된 파일 ({{ uplaodedCount }} / {{ maxUploadCount }}) -
@@ -286,6 +288,8 @@ async function getEvent() {
   eventCount.value = Object.keys(eventResults).length;
 
   eventButtonType.value = 2;
+
+  alert('로딩이 완료되었습니다. 뽑기 버튼을 눌러 계속해주세요.');
 }
 
 async function DoEvent() {
@@ -332,7 +336,15 @@ async function DoEvent() {
 
     getUserDoc(userData.value);
   }
+  else {
+    if (gridItemVisibility.value.find(item => item == false) === undefined && !tempAlert.value) {
+      tempAlert.value = true;
+      alert('나머지 코인도 모두 사용해주시고 뽑기를 완료하시면 문화상품권을 수령하실 수 있습니다!');
+    }
+  }
 }
+
+const tempAlert = ref(false);
 
 const gridItemVisibility = ref([
   false, false, false,
@@ -351,7 +363,7 @@ const uplaodedCount = ref(0);
 const maxUploadCount = ref(10);
 
 watch(uploadedFiles, (newList, oldList) => {
-  uplaodedCount.value = newList.filter(item => item[2] === 0).length;
+  uplaodedCount.value = newList.filter(item => item[2] === 0 || item[2] === 3).length;
 }, { deep: true });
 
 async function updateVisibility() {
@@ -377,7 +389,7 @@ async function updateVisibility() {
     for (let key of keys) {
       uploadedFiles.value.unshift([
         uploadedFiles.value.length,
-        key, 
+        key,
         0,
       ]);
     }
@@ -424,7 +436,7 @@ auth.onAuthStateChanged(async (user) => {
   userData.value = user;
 
   const userHash = $cookies.get('userHash');
-  if (userHash == null) {
+  if (userHash == null && user != null) {
     alert('로그인이 만료되었습니다. 다시 로그인해 주세요.');
     router.push({name: "Auth", params: {type: "login"}, query: {redirect: 'Upload'}});
     return;
@@ -437,6 +449,14 @@ auth.onAuthStateChanged(async (user) => {
   }
 
   isInitiated.value = true;
+
+  const eventKill = configs.value.event_kill ?? false;
+  if (eventKill) {
+    if (uploadedFiles.value.length == 0) {
+      alert('상품 소진으로 이벤트가 조기 종료되었습니다.');
+      router.push({name: "Home"});
+    }
+  }
 });
 
 async function getUserDoc(user) {
@@ -449,7 +469,13 @@ async function getUserDoc(user) {
     }
   }
   catch (err) {
-    console.error(err);
+    console.error(err.message);
+    if (err.message == 'Missing or insufficient permissions.' && userData.value.emailVerified) {
+      if (confirm('리로스쿨에 로그인하셨거나 시험 점수를 업로드하셨나요?')) {
+        alert('로그인 오류가 발생하였습니다. 로그아웃 후 다시 로그인해 주세요.');
+        router.push({name: "Auth", params: {type: "logout"}});
+      }
+    }
   }
 
   const email = user.email;
@@ -525,6 +551,18 @@ function closePopup2() {
 
   closePopup();
 }
+
+async function riroLogin() {
+  if (userData.value == null) {
+    if (confirm('회원가입 후 이벤트에 참여하실 수 있습니다. 회원가입으로 이동하시겠습니까?'))
+      router.push({name: "Auth", params: {type: "register"}, query: {redirect: 'Upload'}});
+    return;
+  }
+
+  alert('리로스쿨에 로그인하면 자동으로 성적 데이터가 입력됩니다.');
+  await delay(200);
+  router.push({name: "Riro"});
+}
 </script>
 
 <style scoped>
@@ -588,6 +626,9 @@ button {
 }
 .event-button-loading {
   background-color: gray;
+}
+.event-button-event {
+  background-color: var(--p2);
 }
 .files-container {
   border-radius: 10px;

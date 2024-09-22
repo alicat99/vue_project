@@ -35,31 +35,36 @@ function filterKeys(data, searchTerm) {
       const includesAllTerms = searchTerms.every(term => key.includes(term));
       if (includesAllTerms) {
           const dd = data[key];
-          let problem = null;
-          let answer = null;
+          let problem = false;
+          let answer = false;
           for (const key2 in dd) {
             if (key2.includes("문제")) {
-              problem = {
-                "name": key2,
-                "url": `https://firebasestorage.googleapis.com/v0/b/soongsil-af5dc.appspot.com/o/files%2F${dd[key2]}?alt=media`
-              };
+              problem = true;
             }
             else if (key2.includes("정답")) {
-              answer = {
-                "name": key2,
-                "url": `https://firebasestorage.googleapis.com/v0/b/soongsil-af5dc.appspot.com/o/files%2F${dd[key2]}?alt=media`
-              };
+              answer = true;
             }
           }
 
           result.push({
             "name": key,
-            "data": data[key],
+            "data": dd,
             "problem": problem,
             "answer": answer
           })
       }
   }
+
+  result.sort((a, b) => {
+    if (a['name'] < b['name']) {
+      return 1;
+    }
+    if (a['name'] > b['name']) {
+      return -1;
+    }
+    return 0; // a['name']와 b['name']가 같은 경우
+  });
+
   return result;
 }
 
@@ -86,7 +91,7 @@ async function getTestInfo(name) {
   for (const key in target) {
     res.push({
       "name": key,
-      "url": `https://firebasestorage.googleapis.com/v0/b/soongsil-af5dc.appspot.com/o/files%2F${target[key]}?alt=media`
+      "url": target[key]
     })
   }
 

@@ -1,5 +1,9 @@
 <template>
-  <div class="container">
+  <div style="
+    padding-top: 10px;
+    color: #a08797;
+  ">
+
     <search-bar-element @submit="submit" ref="searchBar"></search-bar-element>
 
     <result-list-element v-model:result-list="resultList"></result-list-element>
@@ -61,8 +65,4 @@
 </script>
 
 <style scoped>
-.container {
-  padding-top: 10px;
-  color: #a08797;
-}
 </style>

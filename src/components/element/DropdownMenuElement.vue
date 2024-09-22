@@ -33,9 +33,11 @@ const toggleContent = () => {
 <style scoped>
 /* 스타일을 여기에 추가하세요 */
 button {
-  border: 1px solid gray;
+  border: none;
   border-radius: 10px;
-  background-color: transparent;
+  background-color: var(--p1);
+  font-size: 15px;
+  color: white;
 }
 
 div {

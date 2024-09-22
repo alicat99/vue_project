@@ -6,7 +6,10 @@
 </template>
 
 <script setup>
+import { useRoute } from 'vue-router';
 import HeaderView from './components/HeaderView.vue'
+
+const route = useRoute();
 </script>
 
 <style>
@@ -19,6 +22,7 @@ import HeaderView from './components/HeaderView.vue'
   --p1m: #757ef2;
   --p2: #5755FE;
   --p3: #282785;
+  --riro: #0099E6;
 }
 
 body {
@@ -45,4 +49,7 @@ body {
 }
 
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css");
+
+
+
 </style>

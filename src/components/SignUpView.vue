@@ -139,6 +139,8 @@ async function submit() {
   buttonDisable.value = true;
   try {
     await signUp(email_full, password.value);
+    await auth.signOut();
+    await auth.signInWithEmailAndPassword(email_full, password.value);
     createHash(email_full, password.value);
     alert('성공적으로 회원가입되었습니다. 이메일 인증을 완료해주세요.');
     const redirect = route.query.redirect ?? "Home";
