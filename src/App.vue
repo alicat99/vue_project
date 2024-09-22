@@ -10,7 +10,6 @@ import { useRoute } from 'vue-router';
 import HeaderView from './components/HeaderView.vue'
 
 const route = useRoute();
-
 </script>
 
 <style>
