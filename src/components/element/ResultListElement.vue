@@ -1,6 +1,6 @@
 <template>
   <ul v-if="resultList.length">
-    <div v-for="(item, index) in resultList" :key="index" class="result-container">
+    <panel-element-a v-for="(item, index) in resultList" :key="index" class="result-container">
       <router-link :to="{ name: 'Info', params: { id: item.name }}" class="result-url">
         {{ item.name }}
         
@@ -18,38 +18,27 @@
           정답
         </button>
       </router-link>
-    </div>
+    </panel-element-a>
   </ul>
 </template>
 
 <script setup>
-  import { defineProps, defineEmits, computed, ref } from 'vue';
+import { defineModel } from 'vue';
+import PanelElementA from './PanelElementA.vue';
 
-  const props = defineProps({
-    resultList: {
-      type: Array,
-      required: true
-    }
-  });
-
-  const emit = defineEmits(['update:resultList']);
-
-  const resultList = computed({
-    get: () => props.resultList,
-    set: (value) => emit('update:resultList', value)
-  });
+const resultList = defineModel('resultList', {
+  type: Array,
+  required: true
+});
 </script>
 
 <style scoped>
 .result-container {
-  box-shadow: 0px 3px 5px var(--b4);
-  background-color: #ffffff;
-  border-radius: 10px;
+  display: flex;
+  align-items: center;
   width: calc(100% - 20px);
   height: 30px;
   margin-top: 10px;
-  display: flex;
-  align-items: center;
   padding: 10px;
 }
 ul {
@@ -61,17 +50,23 @@ ul {
   font-size: 15px;
   text-align: left;
   text-decoration-line: none;
+  display: flex;
+  align-items: center;
+  flex-basis: 100%;
+  flex-wrap: nowrap;
 }
 .result-tag {
-  background-color: #a08797;
-  border-radius: 15px;
-  border: none;
   padding-top: 3px;
   padding-bottom: 3px;
   margin-left: 7px;
   flex-basis: 50px;
   flex-grow: 0;
   flex-shrink: 0;
+  height: 25px;
+
+  background-color: #a08797;
+  border-radius: 15px;
+  border: none;
   color: var(--b1);
 }
 .result-tag1 {

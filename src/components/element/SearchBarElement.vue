@@ -1,14 +1,36 @@
 <template>
     <div class="input-container">
       <div class="input-item">
-        <input v-model="inputValue" autocomplete="off" @keydown.enter="submit">
-        <button @click="submit" class="submit">검색</button>
+        <input-element-a
+          class="input-input"
+          v-model="inputValue"
+          autocomplete="off"
+          @enter="submit"
+          style="
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+            box-shadow: none;
+          "
+        />
+        <button-element-a
+          @click="submit"
+          class="input-button"
+          style="
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+            box-shadow: none;
+          "
+        >
+          검색
+        </button-element-a>
       </div>
     </div>
 </template>
 
 <script setup>
   import { ref, defineEmits, defineExpose } from 'vue';
+  import InputElementA from './InputElementA.vue';
+  import ButtonElementA from './ButtonElementA.vue';
   
   const emit = defineEmits(['submit']);
 
@@ -35,32 +57,25 @@
   display: flex;
   align-items: center;
 }
+
 .input-item {
   margin: 0 auto;
-  border-radius: 10px;
   height: 30px;
-  background-color: white;
-  box-shadow: 0px 3px 7px var(--b4);
   padding: 0px;
   display: flex;
+
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0px 3px 7px var(--b4);
 }
-input {
-  border: none;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
+
+.input-input {
   height: 100%;
   width: 50vw;
-  background-color: transparent;
-  flex-grow: 1;
-  padding-left: 5px;
 }
-.submit {
-  border: none;
-  height: 100%;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-  background-color: var(--p1);
-  color: var(--b1);
+
+.input-button {
+  height: 110%;
   flex-shrink: 0;
 }
 </style>

@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import HomeView from '../components/HomeView.vue';
 import TestInfoView from '../components/TestInfoView.vue';
-import AuthView from '../components/AuthView.vue';
 import RiroBoardView from '@/components/RiroBoardView.vue';
 import RiroLoginView from '@/components/RiroLoginView.vue';
 
@@ -18,12 +17,7 @@ const routes = [
     component: TestInfoView,
   },
   {
-    path: '/auth/:type',
-    name: 'Auth',
-    component: AuthView,
-  },
-  {
-    path: '/riro/board',
+    path: '/riro/board/:url',
     name: 'RiroBoard',
     component: RiroBoardView,
   },
