@@ -9,7 +9,7 @@
       예) 1학기 기말 한국사, 2학년 물리학1
     </div>
 
-    <result-list-element v-model:result-list="resultList"></result-list-element>
+    <result-list-element :result-list="resultList"></result-list-element>
 
     <div v-if="!resultList.length && queried">
       검색 결과가 없습니다...

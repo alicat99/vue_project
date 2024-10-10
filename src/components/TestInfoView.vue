@@ -2,18 +2,10 @@
   <div class="container">
     <div class="title font-title">{{ testName }}</div>
 
-    <switch-element v-model="riroSwitch" @click="onSwitchClick"/>
-
     <ul class="file-container">
       <div v-for="(item, index) in fileList" :key="index">
         <button-element-a
           class="file-button"
-          style="transition: all 0.5s ease;"
-          :style="{
-            'background-color': riroSwitch ? 'var(--p2)' : 'white',
-            'box-shadow': riroSwitch ? '0px 3px 7px var(--b4)' : '0px 3px 7px var(--riro)',
-            'color': riroSwitch ? 'var(--b1)' : 'var(--riro)',
-          }"
           @click="openUrl(item.url, item.name)"
         >
           {{ item.name }}
@@ -24,34 +16,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, inject } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { getTestInfo } from './BackendRequest';
-import SwitchElement from './element/SwitchElement.vue';
 import ButtonElementA from './element/ButtonElementA.vue';
 
 const route = useRoute();
-const router = useRouter();
-const $cookies = inject('$cookies');
 
 const testName = ref('');
 const fileList = ref([]);
 
-const riroSwitch = ref(false);
-
 function openUrl(url, name) {
-
-  if (!riroSwitch.value) {
-    window.open(url, '_blank');
-    return;
-  }
-
-  const routeData = router.resolve({name: 'RiroBoard', params: {'url': window.btoa(url)}, query: {'name': name}});
-  window.open(routeData.href, '_blank');
-}
-
-function onSwitchClick() {
-  $cookies.set('riroSwitch', riroSwitch.value, '365d');
+  window.open(url, '_blank');
 }
 
 onMounted(async () => {
@@ -63,8 +39,6 @@ onMounted(async () => {
 
     fileList.value = info.files;
   }
-
-  riroSwitch.value = $cookies.get('riroSwitch') == "true" ?? false;
 })
 </script>
 

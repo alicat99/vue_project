@@ -1,6 +1,6 @@
 <template>
   <ul v-if="resultList.length">
-    <panel-element-a v-for="(item, index) in resultList" :key="index" class="result-container">
+    <panel-element-a v-for="(item, index) in visibleList" :key="index" class="result-container">
       <router-link :to="{ name: 'Info', params: { id: item.name }}" class="result-url">
         {{ item.name }}
         
@@ -23,13 +23,56 @@
 </template>
 
 <script setup>
-import { defineModel } from 'vue';
+import { ref, onMounted, onUnmounted, defineProps, watch } from 'vue';
 import PanelElementA from './PanelElementA.vue';
 
-const resultList = defineModel('resultList', {
-  type: Array,
-  required: true
+const props = defineProps({
+  resultList: {
+    type: Array,
+    required: true
+  }
 });
+
+const visibleList = ref([]);
+const chunkSize = 50; // 한 번에 로드할 아이템 수
+let currentIndex = 0;
+
+const loadMore = () => {
+  if (currentIndex >= props.resultList.length) return;
+  visibleList.value = visibleList.value.concat(
+    props.resultList.slice(currentIndex, currentIndex + chunkSize)
+  );
+  currentIndex += chunkSize;
+};
+
+const onScroll = () => {
+  const scrollTop = window.scrollY;
+  const windowHeight = window.innerHeight;
+  const fullHeight = document.body.offsetHeight;
+
+  if (scrollTop + windowHeight >= fullHeight - 100) { // 100px 여유
+    loadMore();
+  }
+};
+
+onMounted(() => {
+  loadMore();
+  window.addEventListener('scroll', onScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', onScroll);
+});
+
+watch(
+  () => props.resultList,
+  (newList, oldList) => {
+    visibleList.value = [];
+    currentIndex = 0;
+    loadMore();
+  },
+  { immediate: true, deep: true }
+);
 </script>
 
 <style scoped>
